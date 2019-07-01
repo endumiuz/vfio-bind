@@ -54,6 +54,9 @@ if [[ $(lspci -D | grep VGA | awk '{print $1}') ]]; then
 					do
 						case $opt in
 							"Yes")
+								if [[ ! -d /etc/kernel/cmdline.d ]]; then
+									mkdir /etc/kernel/cmdline.d
+								fi
 								touch /etc/kernel/cmdline.d/20_vfio.conf
 								echo "intel_iommu=on" >> /etc/kernel/cmdline.d/20_vfio.conf
 								clr-boot-manager update
@@ -85,6 +88,9 @@ if [[ $(lspci -D | grep VGA | awk '{print $1}') ]]; then
 				do
 					case $opt in
 						"Yes")
+							if [[ ! -d /etc/kernel/cmdline.d ]]; then
+								mkdir /etc/kernel/cmdline.d
+							fi
 							touch /etc/kernel/cmdline.d/20_vfio.conf
 							echo "iommu=pt" >> /etc/kernel/cmdline.d/20_vfio.conf
 							echo "Done"
