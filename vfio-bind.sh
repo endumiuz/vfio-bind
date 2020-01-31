@@ -147,7 +147,7 @@ if [[ $(lspci -D | grep VGA | awk '{print $1}') ]]; then
 		"check() {" "return 0" "}" "depends() {" "return 0" "}" \
 		"install() {" "inst_hook pre-trigger 91 \"\$moddir/vfio-bind.sh\"" "}" \
 		"installkernel() {" "instmods vfio vfio_iommu_type1 vfio_pci vfio_virqfd" "}" )
-		echo > $dir/module-setup.sh
+		touch $dir/module-setup.sh
 		for i in "${module_setup[@]}"; do
 			echo $i >> $dir/module-setup.sh
 		done
@@ -189,7 +189,9 @@ if [[ $(lspci -D | grep VGA | awk '{print $1}') ]]; then
 		echo "force_drivers+=\" vfio vfio_iommu_type1 vfio-pci vfio_virqfd \"" > /etc/dracut.conf.d/vfio.conf
 		trap "" INT
 		echo "Regenerating initramfs..."
-		dracut -f --kver `uname -r` $(ls -1t /usr/lib/kernel/initrd-com.solus-project.current.* | tail -1) $(uname -r) &>/dev/null
+		current_kernel=`uname -r`
+		kernel_branch=`uname -r | awk -F. 'NF{ print $NF }'`
+		dracut -f --kver $current_kernel /usr/lib/kernel/initrd-com.solus-project.$kernel_branch.$current_kernel $current_kernel &>/dev/null
 		clr-boot-manager update
 		echo "Done"
 		echo "You must reboot to apply the changes"
