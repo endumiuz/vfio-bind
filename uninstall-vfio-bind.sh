@@ -39,7 +39,10 @@ if [[ -e '/etc/modprobe.d/vfio.conf' ]]; then
 	rm /etc/modprobe.d/vfio.conf
 fi
 
-rm -rf /usr/lib/dracut/modules.d/40vfio-bind
+if [[ -d '/usr/lib/dracut/modules.d/40vfio-bind' ]]; then
+	rm -rf /usr/lib/dracut/modules.d/40vfio-bind
+fi
+
 echo $(sed '/vfio-bind/d' /etc/dracut.conf) > /etc/dracut.conf
 
 if [[ -e '/etc/dracut.conf.d/vfio.conf' ]]; then
@@ -47,7 +50,9 @@ if [[ -e '/etc/dracut.conf.d/vfio.conf' ]]; then
 fi
 
 echo "Regenerating initramfs..."
-dracut -f --kver `uname -r` $(ls -1t /usr/lib/kernel/initrd-com.solus-project.current.* | tail -1) $(uname -r) #&>/dev/null
+kernel_version=`uname -r | awk -F. 'sub(FS $NF,x)'`
+kernel_branch=`uname -r | awk -F. 'NF{ print $NF }'`
+dracut -f --kver $kernel_version.$kernel_branch /usr/lib/kernel/initrd-com.solus-project.$kernel_branch.$kernel_version $kernel_version.$kernel_branch &>/dev/null
 clr-boot-manager update
 echo "Done"
 echo "You must reboot to apply the changes"
