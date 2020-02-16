@@ -189,9 +189,9 @@ if [[ $(lspci -D | grep VGA | awk '{print $1}') ]]; then
 		echo "force_drivers+=\" vfio vfio_iommu_type1 vfio-pci vfio_virqfd \"" > /etc/dracut.conf.d/vfio.conf
 		trap "" INT
 		echo "Regenerating initramfs..."
-		current_kernel=`uname -r`
+		kernel_version=`uname -r | awk -F. 'sub(FS $NF,x)'`
 		kernel_branch=`uname -r | awk -F. 'NF{ print $NF }'`
-		dracut -f --kver $current_kernel /usr/lib/kernel/initrd-com.solus-project.$kernel_branch.$current_kernel $current_kernel &>/dev/null
+		dracut -f --kver $kernel_version.$kernel_branch /usr/lib/kernel/initrd-com.solus-project.$kernel_branch.$kernel_version $kernel_version.$kernel_branch &>/dev/null
 		clr-boot-manager update
 		echo "Done"
 		echo "You must reboot to apply the changes"
